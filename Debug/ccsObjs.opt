@@ -1,0 +1,1 @@
+"./tm4c123gh6pm_startup_ccs.obj" "./source/Controls/PID.obj" "./source/Controls/PositionControl.obj" "./source/Controls/SpeedControl.obj" "./source/Drivers/MotorDriver.obj" "./source/main.obj" "./source/pinout.obj" "./source/utils/uartstdio.obj" "../tm4c123gh6pm.cmd" -llibc.a -l"E:/Senior Design Project/Software/TivaWare/driverlib/ccs/Debug/driverlib.lib" 
