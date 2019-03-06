@@ -15,6 +15,7 @@
 #include "Drivers/MotorDriver.h"
 #include "Controls/PositionControl.h"
 #include "Controls/SpeedControl.h"
+#include "Drivers/MotorDriver.h"
 
 void SystemInit(void);
 void UARTInit(void);
@@ -23,15 +24,17 @@ int main(){
     SystemInit();
     PC_Initialize();
 
-    UARTprintf("System Initialized\n");
+    SC_SetLeftWheelSpeed(-15);
+    SC_SetRightWheelSpeed(-5);
 
+    UARTprintf("System Initialized\n");
 
     char str[30];
     sprintf(str, "%u\n", SysCtlClockGet());
     UARTprintf(str);
 
     for(;;){
-        PC_TurnLeft();
+        //PC_TurnLeft();
         SysCtlDelay(SysCtlClockGet());
     }
 }

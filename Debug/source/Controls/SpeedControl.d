@@ -4,7 +4,7 @@ source/Controls/SpeedControl.obj: ../source/Controls/SpeedControl.c
 source/Controls/SpeedControl.obj: ../source/Controls/SpeedControl.h
 source/Controls/SpeedControl.obj: ../source/Controls/ControlGlobals.h
 source/Controls/SpeedControl.obj: ../source/Controls/PID.h
-source/Controls/SpeedControl.obj: E:/Semesters/Spring\ 2019/Micromouse/Code/TIVA/source/Drivers/MotorDriver.h
+source/Controls/SpeedControl.obj: C:/Users/CPELABWS/Downloads/Micromouse_Embedded-master/MM_Firmware/source/Drivers/MotorDriver.h
 source/Controls/SpeedControl.obj: C:/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.4.LTS/include/stdint.h
 source/Controls/SpeedControl.obj: C:/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.4.LTS/include/sys/stdint.h
 source/Controls/SpeedControl.obj: C:/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.4.LTS/include/sys/cdefs.h
@@ -28,7 +28,7 @@ source/Controls/SpeedControl.obj: C:/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.4.L
 ../source/Controls/SpeedControl.h: 
 ../source/Controls/ControlGlobals.h: 
 ../source/Controls/PID.h: 
-E:/Semesters/Spring\ 2019/Micromouse/Code/TIVA/source/Drivers/MotorDriver.h: 
+C:/Users/CPELABWS/Downloads/Micromouse_Embedded-master/MM_Firmware/source/Drivers/MotorDriver.h: 
 C:/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.4.LTS/include/stdint.h: 
 C:/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.4.LTS/include/sys/stdint.h: 
 C:/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.4.LTS/include/sys/cdefs.h: 

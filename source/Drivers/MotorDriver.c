@@ -241,6 +241,27 @@ void MD_SetLeftMotorDir(MotorDir Direction){
 //Sets the right motor's direction
 void MD_SetRightMotorDir(MotorDir Direction){
     RightMotorState = Direction;
+    switch(Direction){
+        case FWD:
+            GPIOPinWrite(BIN1_BASE, BIN1_PIN, 0x00);
+            GPIOPinWrite(BIN2_BASE, BIN2_PIN, BIN2_PIN);
+            break;
+        case REV:
+            GPIOPinWrite(BIN1_BASE, BIN1_PIN, BIN1_PIN);
+            GPIOPinWrite(BIN2_BASE, BIN2_PIN, 0x00);
+            break;
+        case STOPPED:
+            GPIOPinWrite(BIN1_BASE, BIN1_PIN, 0x00);
+            GPIOPinWrite(BIN2_BASE, BIN2_PIN, 0x00);
+            break;
+        case BRAKE:
+            GPIOPinWrite(BIN1_BASE, BIN1_PIN, BIN1_PIN);
+            GPIOPinWrite(BIN2_BASE, BIN2_PIN, BIN2_PIN);
+            break;
+        default:
+            //Invalid direction, ignore it
+            break;
+    }
 }
 
 MotorDir MD_GetLeftMotorDir(void){

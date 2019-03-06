@@ -28,82 +28,11 @@
 typedef enum{
     LEFT_WHEEL,
     RIGHT_WHEEL,
+} SPEED_CONTROL_PID_ENUM;
+
+typedef enum{
     POSITION,
     LEFT_TURN,
     RIGHT_TURN,
-    PLANT_SIZE
-} PID_enum;
-
-static sPID PIDs[] = {
-                //Left Wheel
-                {
-                     WHEEL_SPEED_KP,
-                     WHEEL_SPEED_KI,
-                     WHEEL_SPEED_KD,
-                     0,                 //Default target to 0
-                     0,                 //Default iState to 0
-                     WHEEL_SPEED_I_MIN,
-                     WHEEL_SPEED_I_MAX,
-                     0,                 //Default last error to 0
-                     0,                 //Default output to 0
-                     WHEEL_SPEED_OUTPUT_MIN,
-                     WHEEL_SPEED_OUTPUT_MAX,
-                },
-                //Right wheel
-                {
-                     WHEEL_SPEED_KP,
-                     WHEEL_SPEED_KI,
-                     WHEEL_SPEED_KD,
-                     0,                 //Default target to 0
-                     0,                 //Default iState to 0
-                     WHEEL_SPEED_I_MIN,
-                     WHEEL_SPEED_I_MAX,
-                     0,                 //Default last error to 0
-                     0,                 //Default output to 0
-                     WHEEL_SPEED_OUTPUT_MIN,
-                     WHEEL_SPEED_OUTPUT_MAX,
-                },
-                //Position PID
-                 {
-                    MOVE_KP,
-                    0,            //No Ki or Kd
-                    0,
-                    0,            //Default target to 0
-                    0,            //All Ki terms to 0
-                    0,
-                    0,
-                    0,            //Kd terms to 0
-                    0,            //Default output to 0
-                    0,            //Lowest speed is 0
-                    MOVE_SPEED,   //Max move speed
-                 },
-                 //Left Motor PID
-                 {
-                    TURN_KP,
-                    0,            //No Ki or Kd
-                    0,
-                    0,            //Default target to 0
-                    0,            //All Ki terms to 0
-                    0,
-                    0,
-                    0,            //Kd terms to 0
-                    0,            //Default output to 0
-                    0,            //Lowest speed is 0
-                    TURN_SPEED,   //Max move speed
-                 },
-                 //Right Motor PID
-                 {
-                    TURN_KP,
-                    0,            //No Ki or Kd
-                    0,
-                    0,            //Default target to 0
-                    0,            //All Ki terms to 0
-                    0,
-                    0,
-                    0,            //Kd terms to 0
-                    0,            //Default output to 0
-                    0,            //Lowest speed is 0
-                    TURN_SPEED,   //Max move speed
-                 }
-};
+} POSITION_CONTROL_PID_ENUM;
 #endif

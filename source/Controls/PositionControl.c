@@ -8,6 +8,51 @@ sPos TargetPosition;
 
 Direction RobotDir = NORTH;
 
+static sPID PositionPIDs[] = {
+        //Position PID
+         {
+            MOVE_KP,
+            0,            //No Ki or Kd
+            0,
+            0,            //Default target to 0
+            0,            //All Ki terms to 0
+            0,
+            0,
+            0,            //Kd terms to 0
+            0,            //Default output to 0
+            0,            //Lowest speed is 0
+            MOVE_SPEED,   //Max move speed
+         },
+         //Left Motor PID
+         {
+            TURN_KP,
+            0,            //No Ki or Kd
+            0,
+            0,            //Default target to 0
+            0,            //All Ki terms to 0
+            0,
+            0,
+            0,            //Kd terms to 0
+            0,            //Default output to 0
+            0,            //Lowest speed is 0
+            TURN_SPEED,   //Max move speed
+         },
+         //Right Motor PID
+         {
+            TURN_KP,
+            0,            //No Ki or Kd
+            0,
+            0,            //Default target to 0
+            0,            //All Ki terms to 0
+            0,
+            0,
+            0,            //Kd terms to 0
+            0,            //Default output to 0
+            0,            //Lowest speed is 0
+            TURN_SPEED,   //Max move speed
+         }
+};
+
 //Forward declarations
 void MoveToTarget(void);
 Direction RobotDirTurnedLeft(void);
@@ -51,12 +96,24 @@ void PC_MoveForward(void){
     }
 }
 
+void ConfigurePIDForward(sPID* PID){
+    PID->OutputMin = 0;
+    PID->OutputMax = TURN_SPEED;
+}
+
+void ConfigurePIDReverse(sPID* PID){
+    PID->OutputMin = -TURN_SPEED;
+    PID->OutputMax = 0;
+}
+
 sPos* PC_TurnLeft(void){
     //Preset the PID
-    sPID* LeftPID = &PIDs[LEFT_TURN];
-    sPID* RightPID = &PIDs[RIGHT_TURN];
-    LeftPID->Target = TICKS_IN_90_DEGREES;
-    RightPID->Target = -TICKS_IN_90_DEGREES;
+    sPID* LeftPID = &PositionPIDs[LEFT_TURN];
+    sPID* RightPID = &PositionPIDs[RIGHT_TURN];
+    LeftPID->Target = -TICKS_IN_90_DEGREES;
+    RightPID->Target = TICKS_IN_90_DEGREES;
+    ConfigurePIDForward(RightPID);
+    ConfigurePIDReverse(LeftPID);
 
     //Reset the encoder ticks so that they start from 0 when turning
     MD_ResetLeftEncoderTicks();
@@ -76,6 +133,7 @@ sPos* PC_TurnLeft(void){
         SC_SetLeftWheelSpeed(LeftPID->Output);
         SC_SetRightWheelSpeed(RightPID->Output);
 
+        //End the loop if both wheels are 'close enough' to the target
         if(TICKS_IN_90_DEGREES - abs(LeftTicks) < 5 &&
                 TICKS_IN_90_DEGREES - abs(RightTicks) < 5){
             TurnComplete = true;
@@ -84,6 +142,8 @@ sPos* PC_TurnLeft(void){
 
     //Change the direction
     RobotDir = RobotDirTurnedLeft();
+
+    //Calculate the robot's new position
 
     return &RobotPosition;
 }

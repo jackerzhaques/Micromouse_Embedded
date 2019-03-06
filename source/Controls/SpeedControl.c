@@ -23,6 +23,37 @@
 MotorDir LeftMotorDir = STOPPED;
 MotorDir RightMotorDir = STOPPED;
 
+static sPID SpeedPIDs[] = {
+                //Left Wheel
+                {
+                     WHEEL_SPEED_KP,
+                     WHEEL_SPEED_KI,
+                     WHEEL_SPEED_KD,
+                     0,                 //Default target to 0
+                     0,                 //Default iState to 0
+                     WHEEL_SPEED_I_MIN,
+                     WHEEL_SPEED_I_MAX,
+                     0,                 //Default last error to 0
+                     0,                 //Default output to 0
+                     WHEEL_SPEED_OUTPUT_MIN,
+                     WHEEL_SPEED_OUTPUT_MAX,
+                },
+                //Right wheel
+                {
+                     WHEEL_SPEED_KP,
+                     WHEEL_SPEED_KI,
+                     WHEEL_SPEED_KD,
+                     0,                 //Default target to 0
+                     0,                 //Default iState to 0
+                     WHEEL_SPEED_I_MIN,
+                     WHEEL_SPEED_I_MAX,
+                     0,                 //Default last error to 0
+                     0,                 //Default output to 0
+                     WHEEL_SPEED_OUTPUT_MIN,
+                     WHEEL_SPEED_OUTPUT_MAX,
+                },
+};
+
 //ISRs
 void ControlLoopISR(void){
     static int32_t LastLeftEncoderCount = 0;
@@ -43,16 +74,16 @@ void ControlLoopISR(void){
     LastRightEncoderCount = MD_GetRightEncoderTicks();
 
     //Calculate the outputs
-    UpdatePID(&PIDs[LEFT_WHEEL], LeftSpeed);
-    UpdatePID(&PIDs[RIGHT_WHEEL], RightSpeed);
+    UpdatePID(&SpeedPIDs[LEFT_WHEEL], LeftSpeed);
+    UpdatePID(&SpeedPIDs[RIGHT_WHEEL], RightSpeed);
 
     //Set the directions
     MD_SetLeftMotorDir(LeftMotorDir);
     MD_SetRightMotorDir(RightMotorDir);
 
     //Set the outputs
-    MD_SetLeftMotorDutyCycle(PIDs[LEFT_WHEEL].Output);
-    MD_SetRightMotorDutyCycle(PIDs[RIGHT_WHEEL].Output);
+    MD_SetLeftMotorDutyCycle(SpeedPIDs[LEFT_WHEEL].Output);
+    MD_SetRightMotorDutyCycle(SpeedPIDs[RIGHT_WHEEL].Output);
 
     TimerIntClear(TIMER2_BASE, TIMER_TIMA_TIMEOUT);
 }
@@ -82,22 +113,28 @@ void SC_Initialize(void){
 }
 
 void SC_SetLeftWheelSpeed(float Speed){
-    PIDs[LEFT_WHEEL].Target = abs(Speed);
+    SpeedPIDs[LEFT_WHEEL].Target = abs(Speed);
     if(Speed < 0){
         LeftMotorDir = REV;
     }
-    else{
+    else if(Speed > 0){
         LeftMotorDir = FWD;
+    }
+    else{
+        LeftMotorDir = STOPPED;
     }
 }
 
 
 void SC_SetRightWheelSpeed(float Speed){
-    PIDs[RIGHT_WHEEL].Target = abs(Speed);
+    SpeedPIDs[RIGHT_WHEEL].Target = abs(Speed);
     if(Speed < 0){
         RightMotorDir = REV;
     }
-    else{
+    else if(Speed > 0){
         RightMotorDir = FWD;
+    }
+    else{
+        RightMotorDir = STOPPED;
     }
 }
