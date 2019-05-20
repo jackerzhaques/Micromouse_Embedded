@@ -1,6 +1,7 @@
 //Project includes
 #include "TaskScheduler/TaskScheduler.h"
 #include "TaskScheduler/PriorityQueue.h"
+#include "Interfaces/MotorInterface.h"
 
 //Standard includes
 #include <stdbool.h>
@@ -38,6 +39,9 @@ int main(void)
     EnableClock();
     EnablePeripherals();
 
+    SetLeftMotorDutyCycle(0.5);
+    SetRightMotorDutyCycle(0.5);
+
     while(1){
     }
 }
@@ -53,6 +57,7 @@ void EnableClock(void){
 void EnablePeripherals(void){
     InitConsole();
     InitializeTaskScheduler(TIMER0_BASE, SYSCTL_PERIPH_TIMER0, SYS_CLK, INT_TIMER0A);
+    InitializeMotors(SYS_CLK);
 }
 
 //Initializes UART0 to be used as a console.
