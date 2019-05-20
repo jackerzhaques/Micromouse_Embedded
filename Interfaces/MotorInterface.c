@@ -20,6 +20,8 @@
 #define PWM_FREQ            1250
 #define LEFT_MOTOR_PWM      PWM_OUT_0
 #define RIGHT_MOTOR_PWM     PWM_OUT_1
+#define LEFT_MOTOR_PWM_BIT  PWM_OUT_0_BIT
+#define RIGHT_MOTOR_PWM_BIT PWM_OUT_1_BIT
 
 /*
  * These defines dictate which GPIO pins the H-Bridge inputs are on
@@ -27,17 +29,19 @@
  * AIN refers to the left motor
  * BIN refers to the right motor
  */
-#define AIN1_PIN            GPIO_PIN_2
+#define AIN1_PIN            GPIO_PIN_3
 #define AIN1_BASE           GPIO_PORTE_BASE
 
-#define AIN2_PIN            GPIO_PIN_3
+#define AIN2_PIN            GPIO_PIN_2
 #define AIN2_BASE           GPIO_PORTE_BASE
 
-#define BIN1_PIN            GPIO_PIN_4
-#define BIN1_BASE           GPIO_PORTF_BASE
+#define BIN1_PIN            GPIO_PIN_1
+#define BIN1_BASE           GPIO_PORTE_BASE
 
-#define BIN2_PIN            GPIO_PIN_1
-#define BIN2_BASE           GPIO_PORTE_BASE
+#define BIN2_PIN            GPIO_PIN_4
+#define BIN2_BASE           GPIO_PORTF_BASE
+
+
 
 void InitializeMotors(uint32_t SysClk){
 
@@ -48,6 +52,7 @@ void InitializeMotors(uint32_t SysClk){
             PWM_GEN,
             PWM_SYSCTL_MOD,
             PWM_FREQ,
+            LEFT_MOTOR_PWM_BIT,
             LEFT_MOTOR_PWM,
             AIN1_BASE,
             AIN2_BASE,
@@ -63,6 +68,7 @@ void InitializeMotors(uint32_t SysClk){
             PWM_GEN,
             PWM_SYSCTL_MOD,
             PWM_FREQ,
+            RIGHT_MOTOR_PWM_BIT,
             RIGHT_MOTOR_PWM,
             BIN1_BASE,
             BIN2_BASE,

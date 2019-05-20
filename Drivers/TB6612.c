@@ -15,6 +15,7 @@ void TB6612_Init(
         uint32_t SysCtlPWMModule,
         uint32_t PWMFrequency,
         uint32_t PWMBit,
+        uint32_t PWMOut,
         uint32_t AIN1Base,
         uint32_t AIN2Base,
         uint32_t AIN1Pin,
@@ -25,6 +26,7 @@ void TB6612_Init(
     driver->PWMBase     = PWMBase;
     driver->PWMGen      = PWMGenerator;
     driver->PWMBit      = PWMBit;
+    driver->PWMOut      = PWMOut;
     driver->AIN1_BASE   = AIN1Base;
     driver->AIN2_BASE   = AIN2Base;
     driver->AIN1_PIN    = AIN1Pin;
@@ -70,7 +72,7 @@ void TB6612_SetDutyCycle(TB6612_Driver *driver,
 
     //TODO: If comparator overflow, subtract 2
     uint32_t PWMRegisterValue = (PWMGenPeriodGet(driver->PWMBase, driver->PWMGen)-2) * DutyCycle;
-    PWMPulseWidthSet(driver->PWMBase, driver->PWMBit, PWMRegisterValue);
+    PWMPulseWidthSet(driver->PWMBase, driver->PWMOut, PWMRegisterValue);
 }
 
 void TB6612_SetDirection(TB6612_Driver *driver,

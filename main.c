@@ -1,4 +1,5 @@
 //Project includes
+#include "pinout.h"
 #include "TaskScheduler/TaskScheduler.h"
 #include "TaskScheduler/PriorityQueue.h"
 #include "Interfaces/MotorInterface.h"
@@ -39,8 +40,10 @@ int main(void)
     EnableClock();
     EnablePeripherals();
 
-    SetLeftMotorDutyCycle(0.5);
-    SetRightMotorDutyCycle(0.5);
+    SetLeftMotorDutyCycle(0.0);
+    SetLeftMotorDirection(true);
+    SetRightMotorDutyCycle(0.0);
+    SetRightMotorDirection(false);
 
     while(1){
     }
@@ -56,6 +59,7 @@ void EnableClock(void){
 */
 void EnablePeripherals(void){
     InitConsole();
+    PinoutSet();
     InitializeTaskScheduler(TIMER0_BASE, SYSCTL_PERIPH_TIMER0, SYS_CLK, INT_TIMER0A);
     InitializeMotors(SYS_CLK);
 }

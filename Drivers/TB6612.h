@@ -17,6 +17,7 @@ typedef struct TB6612_Driver_tag{
     uint32_t PWMBase;
     uint32_t PWMGen;
     uint32_t PWMBit;
+    uint32_t PWMOut;
     uint32_t AIN1_BASE;
     uint32_t AIN2_BASE;
     uint32_t AIN1_PIN;
@@ -30,6 +31,7 @@ void TB6612_Init(
         uint32_t SysCtlPWMModule,
         uint32_t PWMFrequency,
         uint32_t PWMBit,
+        uint32_t PWMOut,
         uint32_t AIN1Base,
         uint32_t AIN2Base,
         uint32_t AIN1Pin,
