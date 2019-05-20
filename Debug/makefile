@@ -10,18 +10,13 @@ GEN_OPTS__FLAG :=
 GEN_CMDS__FLAG := 
 
 ORDERED_OBJS += \
+"./main.obj" \
 "./tm4c123gh6pm_startup_ccs.obj" \
-"./source/Controls/PID.obj" \
-"./source/Controls/PositionControl.obj" \
-"./source/Controls/SpeedControl.obj" \
-"./source/Drivers/MotorDriver.obj" \
-"./source/main.obj" \
-"./source/pinout.obj" \
-"./source/utils/uartstdio.obj" \
+"./utils/uartstdio.obj" \
 "../tm4c123gh6pm.cmd" \
 $(GEN_CMDS__FLAG) \
 -llibc.a \
--l"E:/Senior Design Project/Software/TivaWare/driverlib/ccs/Debug/driverlib.lib" \
+-l"C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/ccs/Debug/driverlib.lib" \
 
 -include ../makefile.init
 
@@ -31,15 +26,9 @@ RMDIR := RMDIR /S/Q
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include subdir_vars.mk
--include source/Controls/subdir_vars.mk
--include source/Drivers/subdir_vars.mk
--include source/subdir_vars.mk
--include source/utils/subdir_vars.mk
+-include utils/subdir_vars.mk
 -include subdir_rules.mk
--include source/Controls/subdir_rules.mk
--include source/Drivers/subdir_rules.mk
--include source/subdir_rules.mk
--include source/utils/subdir_rules.mk
+-include utils/subdir_rules.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -136,42 +125,42 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXE_OUTPUTS += \
-MM_Firmware.out \
+Micromouse.out \
 
 EXE_OUTPUTS__QUOTED += \
-"MM_Firmware.out" \
+"Micromouse.out" \
 
 BIN_OUTPUTS += \
-MM_Firmware.hex \
+Micromouse.hex \
 
 BIN_OUTPUTS__QUOTED += \
-"MM_Firmware.hex" \
+"Micromouse.hex" \
 
 
 # All Target
 all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
-	@$(MAKE) --no-print-directory -Onone "MM_Firmware.out"
+	@$(MAKE) --no-print-directory -Onone "Micromouse.out"
 
 # Tool invocations
-MM_Firmware.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
+Micromouse.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: ARM Linker'
-	"C:/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.4.LTS/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 -me --define=ccs="ccs" --define=PART_TM4C123GH6PM -g --gcc --diag_warning=225 --diag_wrap=off --display_error_number --abi=eabi -z -m"MM_Firmware.map" --heap_size=0 --stack_size=512 -i"C:/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.4.LTS/lib" -i"C:/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.4.LTS/include" --reread_libs --diag_wrap=off --display_error_number --warn_sections --xml_link_info="MM_Firmware_linkInfo.xml" --rom_model -o "MM_Firmware.out" $(ORDERED_OBJS)
+	"C:/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.4.LTS/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 -me --define=ccs="ccs" --define=TARGET_IS_TM4C129_RA0 --define=PART_TM4C123GH6PM -g --gcc --diag_warning=225 --diag_wrap=off --display_error_number --abi=eabi -z -m"Micromouse.map" --heap_size=0 --stack_size=2048 -i"C:/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.4.LTS/lib" -i"C:/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.4.LTS/include" --reread_libs --diag_wrap=off --display_error_number --warn_sections --xml_link_info="Micromouse_linkInfo.xml" --rom_model -o "Micromouse.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
-MM_Firmware.hex: $(EXE_OUTPUTS)
+Micromouse.hex: $(EXE_OUTPUTS)
 	@echo 'Building files: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo 'Invoking: ARM Hex Utility'
-	"C:/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.4.LTS/bin/armhex"  -o "MM_Firmware.hex" $(EXE_OUTPUTS__QUOTED)
+	"C:/ti/ccsv8/tools/compiler/ti-cgt-arm_18.1.4.LTS/bin/armhex"  -o "Micromouse.hex" $(EXE_OUTPUTS__QUOTED)
 	@echo 'Finished building: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo ' '
 
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "tm4c123gh6pm_startup_ccs.obj" "source\Controls\PID.obj" "source\Controls\PositionControl.obj" "source\Controls\SpeedControl.obj" "source\Drivers\MotorDriver.obj" "source\main.obj" "source\pinout.obj" "source\utils\uartstdio.obj" 
-	-$(RM) "tm4c123gh6pm_startup_ccs.d" "source\Controls\PID.d" "source\Controls\PositionControl.d" "source\Controls\SpeedControl.d" "source\Drivers\MotorDriver.d" "source\main.d" "source\pinout.d" "source\utils\uartstdio.d" 
+	-$(RM) "main.obj" "tm4c123gh6pm_startup_ccs.obj" "utils\uartstdio.obj" 
+	-$(RM) "main.d" "tm4c123gh6pm_startup_ccs.d" "utils\uartstdio.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

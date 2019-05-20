@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>MM_Firmware</name>
+	<name>Micromouse</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -26,15 +26,15 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>source/utils/uartstdio.c</name>
+			<name>utils/uartstdio.c</name>
 			<type>1</type>
-			<locationURI>TIVAWARE_ROOT/utils/uartstdio.c</locationURI>
+			<locationURI>TIVAWARE/utils/uartstdio.c</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>
 		<variable>
-			<name>TIVAWARE_ROOT</name>
-			<value>file:/E:/Senior%20Design%20Project/Software/TivaWare</value>
+			<name>TIVAWARE</name>
+			<value>file:/C:/ti/TivaWare_C_Series-2.1.4.178</value>
 		</variable>
 	</variableList>
 </projectDescription>
