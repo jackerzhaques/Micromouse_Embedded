@@ -6,11 +6,9 @@
 
 typedef struct Encoder_tag{
     uint32_t ticks;
+    float position;
     float degrees;
     float speed;
-    float ticksToDegreesRatio;
-    uint8_t tickReceived;
-    uint32_t lastTimerVal;
 } Encoder;
 
 void InitializeEncoders(void);

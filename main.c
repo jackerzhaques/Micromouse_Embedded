@@ -44,9 +44,9 @@ int main(void)
     EnableClock();
     EnablePeripherals();
 
-    SetLeftMotorDutyCycle(0.3);
+    SetLeftMotorDutyCycle(0.35);
+    SetRightMotorDutyCycle(0.35);
     SetLeftMotorDirection(true);
-    SetRightMotorDutyCycle(0.3);
     SetRightMotorDirection(false);
 
     while(1){

@@ -1,6 +1,9 @@
 #include "EncoderInterface.h"
 
-#define FILTER_WEIGHT   0.25
+#define FILTER_WEIGHT           0.25
+//#define WHEEL_CIRCUMFERENCE     188.49      //mm, diameter is 60mm
+#define MM_PER_TICK             9.4245  //mm
+#define DEGREES_PER_TICK        18
 
 //Tivaware includes
 #include <inc/hw_memmap.h>
@@ -23,10 +26,12 @@ volatile static Encoder RightEncoder;
 void LeftEncoder_ISR(void){
     //Capture the values from the ISR
     LeftEncoder.ticks = QEIPositionGet(QEI1_BASE);
+    LeftEncoder.position = LeftEncoder.ticks * MM_PER_TICK;
+    LeftEncoder.degrees = LeftEncoder.ticks * DEGREES_PER_TICK;
     uint32_t velocityTicks = QEIVelocityGet(QEI1_BASE);
 
     //Convert the velocity ticks to speed and lp filter the value
-    float vel = velocityTicks / ((float)TIMER_MAX_COUNT / (float)SYS_CLK);
+    float vel = MM_PER_TICK * velocityTicks / ((float)TIMER_MAX_COUNT / (float)SYS_CLK);
     vel = ((1 - FILTER_WEIGHT) * vel) + (FILTER_WEIGHT * LeftEncoder.speed);
     LeftEncoder.speed = vel;
 
@@ -37,10 +42,12 @@ void LeftEncoder_ISR(void){
 void RightEncoder_ISR(void){
     //Capture the values from the ISR
     RightEncoder.ticks = QEIPositionGet(QEI0_BASE);
+    RightEncoder.position = RightEncoder.ticks * MM_PER_TICK;
+    RightEncoder.degrees = RightEncoder.ticks * DEGREES_PER_TICK;
     uint32_t velocityTicks = QEIVelocityGet(QEI0_BASE);
 
     //Convert the velocity ticks to speed and lp filter the value
-    float vel = velocityTicks / ((float)TIMER_MAX_COUNT / (float)SYS_CLK);
+    float vel = MM_PER_TICK * velocityTicks / ((float)TIMER_MAX_COUNT / (float)SYS_CLK);
     vel = ((1 - FILTER_WEIGHT) * vel) + (FILTER_WEIGHT * RightEncoder.speed);
     RightEncoder.speed = vel;
 
@@ -49,6 +56,17 @@ void RightEncoder_ISR(void){
 }
 
 void InitializeEncoders(void){
+    //Initialize the encoder structs
+    LeftEncoder.ticks       = 0;
+    LeftEncoder.position    = 0;
+    LeftEncoder.speed       = 0;
+    LeftEncoder.degrees     = 0;
+
+    RightEncoder.ticks      = 0;
+    RightEncoder.position   = 0;
+    RightEncoder.speed      = 0;
+    RightEncoder.degrees    = 0;
+
     //Enable and configure QEI1 for left encoder ticks
     SysCtlPeripheralEnable(SYSCTL_PERIPH_QEI1);
     while(!SysCtlPeripheralReady(SYSCTL_PERIPH_QEI1)){
