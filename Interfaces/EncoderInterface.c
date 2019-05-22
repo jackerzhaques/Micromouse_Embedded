@@ -1,5 +1,7 @@
 #include "EncoderInterface.h"
 
+#define FILTER_WEIGHT   0.25
+
 //Tivaware includes
 #include <inc/hw_memmap.h>
 #include "inc/hw_types.h"
@@ -9,77 +11,83 @@
 #include "driverlib/timer.h"
 #include "driverlib/interrupt.h"
 #include <driverlib/gpio.h>
+#include <driverlib/qei.h>
 
-#define TIMER_MAX_COUNT 80000000
+#define TIMER_MAX_COUNT 0xFFFFFF    //Value determined experimentally
+#define SYS_CLK         80000000
 
 //Encoder structs
 volatile static Encoder LeftEncoder;
 volatile static Encoder RightEncoder;
 
-void LeftEncoderUpdate_ISR(void){
-    LeftEncoder.ticks++;
+void LeftEncoder_ISR(void){
+    //Capture the values from the ISR
+    LeftEncoder.ticks = QEIPositionGet(QEI1_BASE);
+    uint32_t velocityTicks = QEIVelocityGet(QEI1_BASE);
 
-    TimerIntClear(TIMER1_BASE, TIMER_CAPB_EVENT);
+    //Convert the velocity ticks to speed and lp filter the value
+    float vel = velocityTicks / ((float)TIMER_MAX_COUNT / (float)SYS_CLK);
+    vel = ((1 - FILTER_WEIGHT) * vel) + (FILTER_WEIGHT * LeftEncoder.speed);
+    LeftEncoder.speed = vel;
+
+    //Clear the interrupt
+    QEIIntClear(QEI1_BASE, QEI_INTTIMER);
 }
 
-void RightEncoderUpdate_ISR(void){
-    uint32_t TimerVal = TimerValueGet(TIMER1_BASE, TIMER_B);
-    int32_t TimerDiff = LeftEncoder.lastTimerVal - TimerVal;
-    LeftEncoder.lastTimerVal = TimerVal;
+void RightEncoder_ISR(void){
+    //Capture the values from the ISR
+    RightEncoder.ticks = QEIPositionGet(QEI0_BASE);
+    uint32_t velocityTicks = QEIVelocityGet(QEI0_BASE);
 
-    if(TimerDiff < 0){
-        TimerDiff += 0xFFFFFFFF;
-    }
-    float speed = 80000000 / TimerDiff;
+    //Convert the velocity ticks to speed and lp filter the value
+    float vel = velocityTicks / ((float)TIMER_MAX_COUNT / (float)SYS_CLK);
+    vel = ((1 - FILTER_WEIGHT) * vel) + (FILTER_WEIGHT * RightEncoder.speed);
+    RightEncoder.speed = vel;
 
-    LeftEncoder.speed = speed;
-    LeftEncoder.ticks++;
-
-    TimerIntClear(TIMER1_BASE, TIMER_CAPA_EVENT);
-}
-
-void EncoderAnyISR(void){
-
+    //Clear the interrupt
+    QEIIntClear(QEI0_BASE, QEI_INTTIMER);
 }
 
 void InitializeEncoders(void){
-    //IntEnable(INT_GPIOF);
-    /*
-    //Enable timer 1 for speed timeout
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
+    //Enable and configure QEI1 for left encoder ticks
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_QEI1);
+    while(!SysCtlPeripheralReady(SYSCTL_PERIPH_QEI1)){
 
-    //Configure the timer to be a split 24-bit timer.
-    //Enable time captures for both splits
-    TimerConfigure(TIMER1_BASE, (TIMER_CFG_SPLIT_PAIR | TIMER_CFG_B_CAP_TIME | TIMER_CFG_A_CAP_TIME));
+    }
+    QEIConfigure(QEI1_BASE,
+                 QEI_CONFIG_CAPTURE_A |
+                 QEI_CONFIG_NO_RESET |
+                 QEI_CONFIG_NO_SWAP |
+                 QEI_CONFIG_CLOCK_DIR,
+                 0xFFFFFFFF);
+    QEIFilterConfigure(QEI1_BASE, QEI_FILTCNT_17);  //17 sys clocks for filter
+    QEIVelocityConfigure(QEI1_BASE, QEI_VELDIV_1, TIMER_MAX_COUNT);
+    QEIIntRegister(QEI1_BASE, LeftEncoder_ISR);
 
-    //Set the event to be falling edge triggered
-    TimerControlEvent(TIMER1_BASE, TIMER_B, TIMER_EVENT_NEG_EDGE);
-    TimerControlEvent(TIMER1_BASE, TIMER_A, TIMER_EVENT_NEG_EDGE);
+    QEIIntEnable(QEI1_BASE, QEI_INTTIMER);
+    QEIFilterEnable(QEI1_BASE);
+    QEIVelocityEnable(QEI1_BASE);
+    QEIEnable(QEI1_BASE);
 
-    //Configure the timers to be 24 bit by giving them 8 bits of prescale
-    TimerPrescaleSet(TIMER1_BASE, TIMER_B, 0xFF);
-    TimerPrescaleSet(TIMER1_BASE, TIMER_A, 0xFF);
+    //Enable and configure QEI0 for right encoder ticks
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_QEI0);
+    while(!SysCtlPeripheralReady(SYSCTL_PERIPH_QEI0)){
 
-    //Register the ISRs
-    TimerIntRegister(TIMER1_BASE, TIMER_B, LeftEncoderUpdate_ISR);
-    TimerIntRegister(TIMER1_BASE, TIMER_A, RightEncoderUpdate_ISR);
+    }
+    QEIConfigure(QEI0_BASE,
+                 QEI_CONFIG_CAPTURE_A |
+                 QEI_CONFIG_NO_RESET |
+                 QEI_CONFIG_NO_SWAP |
+                 QEI_CONFIG_CLOCK_DIR,
+                 0xFFFFFFFF);
+    QEIFilterConfigure(QEI0_BASE, QEI_FILTCNT_17);  //17 sys clocks for filter
+    QEIVelocityConfigure(QEI0_BASE, QEI_VELDIV_1, TIMER_MAX_COUNT);
+    QEIIntRegister(QEI0_BASE, RightEncoder_ISR);
 
-    //Clear the event interrupts
-    TimerIntClear(TIMER1_BASE, TIMER_CAPB_EVENT);
-    TimerIntClear(TIMER1_BASE, TIMER_CAPA_EVENT);
-
-    //Enable the event interrupts
-    TimerIntEnable(TIMER1_BASE, TIMER_CAPB_EVENT);
-    TimerIntEnable(TIMER1_BASE, TIMER_CAPA_EVENT);
-
-    //Enable the interrupts for the timer module
-    IntEnable(INT_TIMER1B);
-    IntEnable(INT_TIMER1A);
-
-    //Enable both timers
-    TimerEnable(TIMER1_BASE, TIMER_B);
-    TimerEnable(TIMER1_BASE, TIMER_A);
-    */
+    QEIIntEnable(QEI0_BASE, QEI_INTTIMER);
+    QEIFilterEnable(QEI0_BASE);
+    QEIVelocityEnable(QEI0_BASE);
+    QEIEnable(QEI0_BASE);
 }
 
 Encoder* GetLeftEncoder(void){

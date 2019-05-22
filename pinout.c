@@ -35,7 +35,7 @@
 //
 //*****************************************************************************
 
-// This file was automatically generated on 3/2/2019 at 9:50:44 AM
+// This file was automatically generated on 5/21/2019 at 10:09:33 PM
 // by TI PinMux version 4.0.1530 
 //
 //*****************************************************************************
@@ -74,6 +74,7 @@ PinoutSet(void)
     //
 	MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
 	MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+	MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
 	MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
 	MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 
@@ -147,17 +148,26 @@ PinoutSet(void)
 	MAP_GPIOPinConfigure(GPIO_PB7_M0PWM1);
 	MAP_GPIOPinTypePWM(GPIO_PORTB_BASE, GPIO_PIN_7);
 
+	//
+	// Unlock the Port Pin and Set the Commit Bit
+	//
+	HWREG(GPIO_PORTF_BASE+GPIO_O_LOCK) = GPIO_LOCK_KEY;
+	HWREG(GPIO_PORTF_BASE+GPIO_O_CR)   |= GPIO_PIN_0;
+	HWREG(GPIO_PORTF_BASE+GPIO_O_LOCK) = 0x0;
+	
     //
-    // Configure the GPIO Pin Mux for PF2
-	// for input
+    // Configure the GPIO Pin Mux for PF0
+	// for PHA0
     //
-	MAP_GPIOPinTypeGPIOInput(GPIO_PORTF_BASE, GPIO_PIN_2);
+	MAP_GPIOPinConfigure(GPIO_PF0_PHA0);
+	MAP_GPIOPinTypeQEI(GPIO_PORTF_BASE, GPIO_PIN_0);
 
     //
-    // Configure the GPIO Pin Mux for PF3
-	// for input
+    // Configure the GPIO Pin Mux for PC5
+	// for PHA1
     //
-	MAP_GPIOPinTypeGPIOInput(GPIO_PORTF_BASE, GPIO_PIN_3);
+	MAP_GPIOPinConfigure(GPIO_PC5_PHA1);
+	MAP_GPIOPinTypeQEI(GPIO_PORTC_BASE, GPIO_PIN_5);
 
     //
     // Configure the GPIO Pin Mux for PA0

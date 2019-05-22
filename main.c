@@ -36,15 +36,17 @@ void sprintfloat(char *Buffer, float val, int arg1){
     sprintf(Buffer, "%i.%i", LeftSide, RightSide);
 }
 
+volatile static uint32_t pos, vel;
+
 int main(void)
 {
     FPULazyStackingEnable();
     EnableClock();
     EnablePeripherals();
 
-    SetLeftMotorDutyCycle(0.0);
+    SetLeftMotorDutyCycle(0.3);
     SetLeftMotorDirection(true);
-    SetRightMotorDutyCycle(0.0);
+    SetRightMotorDutyCycle(0.3);
     SetRightMotorDirection(false);
 
     while(1){
