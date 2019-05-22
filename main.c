@@ -3,6 +3,7 @@
 #include "TaskScheduler/TaskScheduler.h"
 #include "TaskScheduler/PriorityQueue.h"
 #include "Interfaces/MotorInterface.h"
+#include "Interfaces/EncoderInterface.h"
 
 //Standard includes
 #include <stdbool.h>
@@ -19,6 +20,7 @@
 #include "driverlib/uart.h"
 #include "utils/uartstdio.h"
 #include "driverlib/fpu.h"
+#include <driverlib/qei.h>
 
 //System clock running at 80MHz
 #define SYS_CLK     80000000
@@ -62,6 +64,7 @@ void EnablePeripherals(void){
     PinoutSet();
     InitializeTaskScheduler(TIMER0_BASE, SYSCTL_PERIPH_TIMER0, SYS_CLK, INT_TIMER0A);
     InitializeMotors(SYS_CLK);
+    InitializeEncoders();
 }
 
 //Initializes UART0 to be used as a console.

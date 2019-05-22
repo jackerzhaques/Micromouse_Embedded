@@ -149,17 +149,15 @@ PinoutSet(void)
 
     //
     // Configure the GPIO Pin Mux for PF2
-	// for T1CCP0
+	// for input
     //
-	MAP_GPIOPinConfigure(GPIO_PF2_T1CCP0);
-	MAP_GPIOPinTypeTimer(GPIO_PORTF_BASE, GPIO_PIN_2);
+	MAP_GPIOPinTypeGPIOInput(GPIO_PORTF_BASE, GPIO_PIN_2);
 
     //
     // Configure the GPIO Pin Mux for PF3
-	// for T1CCP1
+	// for input
     //
-	MAP_GPIOPinConfigure(GPIO_PF3_T1CCP1);
-	MAP_GPIOPinTypeTimer(GPIO_PORTF_BASE, GPIO_PIN_3);
+	MAP_GPIOPinTypeGPIOInput(GPIO_PORTF_BASE, GPIO_PIN_3);
 
     //
     // Configure the GPIO Pin Mux for PA0

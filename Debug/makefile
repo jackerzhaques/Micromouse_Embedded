@@ -14,6 +14,7 @@ ORDERED_OBJS += \
 "./pinout.obj" \
 "./tm4c123gh6pm_startup_ccs.obj" \
 "./Drivers/TB6612.obj" \
+"./Interfaces/EncoderInterface.obj" \
 "./Interfaces/MotorInterface.obj" \
 "./TaskScheduler/PriorityQueue.obj" \
 "./TaskScheduler/TaskScheduler.obj" \
@@ -170,8 +171,8 @@ Micromouse.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "main.obj" "pinout.obj" "tm4c123gh6pm_startup_ccs.obj" "Drivers\TB6612.obj" "Interfaces\MotorInterface.obj" "TaskScheduler\PriorityQueue.obj" "TaskScheduler\TaskScheduler.obj" "utils\uartstdio.obj" 
-	-$(RM) "main.d" "pinout.d" "tm4c123gh6pm_startup_ccs.d" "Drivers\TB6612.d" "Interfaces\MotorInterface.d" "TaskScheduler\PriorityQueue.d" "TaskScheduler\TaskScheduler.d" "utils\uartstdio.d" 
+	-$(RM) "main.obj" "pinout.obj" "tm4c123gh6pm_startup_ccs.obj" "Drivers\TB6612.obj" "Interfaces\EncoderInterface.obj" "Interfaces\MotorInterface.obj" "TaskScheduler\PriorityQueue.obj" "TaskScheduler\TaskScheduler.obj" "utils\uartstdio.obj" 
+	-$(RM) "main.d" "pinout.d" "tm4c123gh6pm_startup_ccs.d" "Drivers\TB6612.d" "Interfaces\EncoderInterface.d" "Interfaces\MotorInterface.d" "TaskScheduler\PriorityQueue.d" "TaskScheduler\TaskScheduler.d" "utils\uartstdio.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 
