@@ -1,9 +1,8 @@
 #include "EncoderInterface.h"
 
-#define FILTER_WEIGHT           0.25
-//#define WHEEL_CIRCUMFERENCE     188.49      //mm, diameter is 60mm
-#define MM_PER_TICK             9.4245  //mm
-#define DEGREES_PER_TICK        18
+//Project includes
+#include "ControlLoop/ControlLoop.h"
+#include "ControlLoop/ControlGlobals.h"
 
 //Tivaware includes
 #include <inc/hw_memmap.h>
@@ -16,8 +15,9 @@
 #include <driverlib/gpio.h>
 #include <driverlib/qei.h>
 
-#define TIMER_MAX_COUNT 0xFFFFFF    //Value determined experimentally
-#define SYS_CLK         80000000
+#define TIMER_FREQUENCY 1000
+
+volatile static float FILTER_WEIGHT = 0.003;    //Keep 0.3% of the new value
 
 //Encoder structs
 volatile static Encoder LeftEncoder;
@@ -25,15 +25,21 @@ volatile static Encoder RightEncoder;
 
 void LeftEncoder_ISR(void){
     //Capture the values from the ISR
-    LeftEncoder.ticks = QEIPositionGet(QEI1_BASE);
-    LeftEncoder.position = LeftEncoder.ticks * MM_PER_TICK;
-    LeftEncoder.degrees = LeftEncoder.ticks * DEGREES_PER_TICK;
-    uint32_t velocityTicks = QEIVelocityGet(QEI1_BASE);
+    int32_t ticks = LeftEncoder.dir * QEIPositionGet(QEI1_BASE);
+    LeftEncoder.ticks += ticks;
+    LeftEncoder.position += ticks * MM_PER_TICK;
+    //LeftEncoder.degrees += ticks * DEGREES_PER_TICK;
 
-    //Convert the velocity ticks to speed and lp filter the value
-    float vel = MM_PER_TICK * velocityTicks / ((float)TIMER_MAX_COUNT / (float)SYS_CLK);
-    vel = ((1 - FILTER_WEIGHT) * vel) + (FILTER_WEIGHT * LeftEncoder.speed);
-    LeftEncoder.speed = vel;
+    //Reset the position
+    QEIPositionSet(QEI1_BASE, 0);
+
+    //Convert the ticks to speed
+    float vel = MM_PER_TICK * ticks * TIMER_FREQUENCY;
+
+    //Filter the velocity
+    LeftEncoder.speed =
+            ((1 - FILTER_WEIGHT) * LeftEncoder.speed) +
+            (FILTER_WEIGHT * vel);
 
     //Clear the interrupt
     QEIIntClear(QEI1_BASE, QEI_INTTIMER);
@@ -41,31 +47,39 @@ void LeftEncoder_ISR(void){
 
 void RightEncoder_ISR(void){
     //Capture the values from the ISR
-    RightEncoder.ticks = QEIPositionGet(QEI0_BASE);
-    RightEncoder.position = RightEncoder.ticks * MM_PER_TICK;
-    RightEncoder.degrees = RightEncoder.ticks * DEGREES_PER_TICK;
-    uint32_t velocityTicks = QEIVelocityGet(QEI0_BASE);
+    int32_t ticks = RightEncoder.dir * QEIPositionGet(QEI0_BASE);
+    RightEncoder.ticks += ticks;
+    RightEncoder.position += ticks * MM_PER_TICK;
+    //LeftEncoder.degrees += ticks * DEGREES_PER_TICK;
 
-    //Convert the velocity ticks to speed and lp filter the value
-    float vel = MM_PER_TICK * velocityTicks / ((float)TIMER_MAX_COUNT / (float)SYS_CLK);
-    vel = ((1 - FILTER_WEIGHT) * vel) + (FILTER_WEIGHT * RightEncoder.speed);
-    RightEncoder.speed = vel;
+    //Reset the position
+    QEIPositionSet(QEI0_BASE, 0);
+
+    //Convert the ticks to speed
+    float vel = MM_PER_TICK * ticks * TIMER_FREQUENCY;
+
+    //Filter the velocity
+    RightEncoder.speed =
+            ((1 - FILTER_WEIGHT) * RightEncoder.speed) +
+            (FILTER_WEIGHT * vel);
 
     //Clear the interrupt
     QEIIntClear(QEI0_BASE, QEI_INTTIMER);
 }
 
-void InitializeEncoders(void){
+void InitializeEncoders(uint32_t systemClk){
     //Initialize the encoder structs
     LeftEncoder.ticks       = 0;
     LeftEncoder.position    = 0;
     LeftEncoder.speed       = 0;
     LeftEncoder.degrees     = 0;
+    LeftEncoder.dir         = 1;
 
     RightEncoder.ticks      = 0;
     RightEncoder.position   = 0;
     RightEncoder.speed      = 0;
     RightEncoder.degrees    = 0;
+    RightEncoder.dir        = 1;
 
     //Enable and configure QEI1 for left encoder ticks
     SysCtlPeripheralEnable(SYSCTL_PERIPH_QEI1);
@@ -79,7 +93,7 @@ void InitializeEncoders(void){
                  QEI_CONFIG_CLOCK_DIR,
                  0xFFFFFFFF);
     QEIFilterConfigure(QEI1_BASE, QEI_FILTCNT_17);  //17 sys clocks for filter
-    QEIVelocityConfigure(QEI1_BASE, QEI_VELDIV_1, TIMER_MAX_COUNT);
+    QEIVelocityConfigure(QEI1_BASE, QEI_VELDIV_1, systemClk / TIMER_FREQUENCY);
     QEIIntRegister(QEI1_BASE, LeftEncoder_ISR);
 
     QEIIntEnable(QEI1_BASE, QEI_INTTIMER);
@@ -99,13 +113,23 @@ void InitializeEncoders(void){
                  QEI_CONFIG_CLOCK_DIR,
                  0xFFFFFFFF);
     QEIFilterConfigure(QEI0_BASE, QEI_FILTCNT_17);  //17 sys clocks for filter
-    QEIVelocityConfigure(QEI0_BASE, QEI_VELDIV_1, TIMER_MAX_COUNT);
+    QEIVelocityConfigure(QEI0_BASE, QEI_VELDIV_1, systemClk / TIMER_FREQUENCY);
     QEIIntRegister(QEI0_BASE, RightEncoder_ISR);
 
     QEIIntEnable(QEI0_BASE, QEI_INTTIMER);
     QEIFilterEnable(QEI0_BASE);
     QEIVelocityEnable(QEI0_BASE);
     QEIEnable(QEI0_BASE);
+}
+
+void ResetEncoders(void){
+    LeftEncoder.degrees = 0;
+    LeftEncoder.ticks = 0;
+    LeftEncoder.position = 0;
+
+    RightEncoder.degrees = 0;
+    RightEncoder.ticks = 0;
+    RightEncoder.position = 0;
 }
 
 Encoder* GetLeftEncoder(void){

@@ -3,6 +3,7 @@
 //Standard includes
 
 //Project includes
+#include "Interfaces/EncoderInterface.h"
 
 //Tivaware includes
 #include <driverlib/pwm.h>
@@ -41,9 +42,13 @@
 #define BIN2_PIN            GPIO_PIN_4
 #define BIN2_BASE           GPIO_PORTF_BASE
 
-
+//Pointers to encoder structs
+static Encoder* pEncoders[2] = {0,0};
 
 void InitializeMotors(uint32_t SysClk){
+    //Get pointers to both encoders
+    pEncoders[0] = GetLeftEncoder();
+    pEncoders[1] = GetRightEncoder();
 
     //Left motor init
     TB6612_Init(
@@ -88,8 +93,22 @@ void SetRightMotorDutyCycle(float DutyCycle){
 
 void SetLeftMotorDirection(bool isClockwise){
     TB6612_SetDirection(&LeftMotorDriver, isClockwise);
+
+    if(isClockwise){
+        pEncoders[0]->dir = 1;
+    }
+    else{
+        pEncoders[0]->dir = -1;
+    }
 }
 
 void SetRightMotorDirection(bool isClockwise){
     TB6612_SetDirection(&RightMotorDriver, isClockwise);
+
+    if(isClockwise){
+        pEncoders[1]->dir = -1;
+    }
+    else{
+        pEncoders[1]->dir = 1;
+    }
 }

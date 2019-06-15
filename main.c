@@ -4,6 +4,9 @@
 #include "TaskScheduler/PriorityQueue.h"
 #include "Interfaces/MotorInterface.h"
 #include "Interfaces/EncoderInterface.h"
+#include "ControlLoop/ControlLoop.h"
+#include "Robot.h"
+#include "Interfaces/DistanceSensorInterface.h"
 
 //Standard includes
 #include <stdbool.h>
@@ -23,7 +26,7 @@
 #include <driverlib/qei.h>
 
 //System clock running at 80MHz
-#define SYS_CLK     80000000
+#define sysClk     80000000
 
 void EnableClock(void);
 void EnablePeripherals();
@@ -37,19 +40,23 @@ void sprintfloat(char *Buffer, float val, int arg1){
 }
 
 volatile static uint32_t pos, vel;
-
 int main(void)
 {
     FPULazyStackingEnable();
     EnableClock();
     EnablePeripherals();
 
-    SetLeftMotorDutyCycle(0.35);
-    SetRightMotorDutyCycle(0.35);
-    SetLeftMotorDirection(true);
-    SetRightMotorDirection(false);
+    //Drive(100);
+    //SysCtlDelay(sysClk * 2);
+    //Drive(-100);
+    //SysCtlDelay(sysClk * 2);
+    //Drive(-5000);
 
     while(1){
+        //Drive(17);
+        SysCtlDelay(sysClk * 1);
+        //Drive(-17);
+        SysCtlDelay(sysClk * 1);
     }
 }
 
@@ -64,9 +71,9 @@ void EnableClock(void){
 void EnablePeripherals(void){
     InitConsole();
     PinoutSet();
-    InitializeTaskScheduler(TIMER0_BASE, SYSCTL_PERIPH_TIMER0, SYS_CLK, INT_TIMER0A);
-    InitializeMotors(SYS_CLK);
-    InitializeEncoders();
+    InitializeTaskScheduler(TIMER0_BASE, SYSCTL_PERIPH_TIMER0, sysClk, INT_TIMER0A);
+    //InitializeRobot(sysClk);
+    InitializeDistanceSensors(sysClk);
 }
 
 //Initializes UART0 to be used as a console.
