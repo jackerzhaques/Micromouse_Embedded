@@ -8,6 +8,7 @@
 #include "driverlib/i2c.h"
 
 void InitializeDistanceSensors(uint32_t SysClk){
+    uint32_t data = 0, step = 0;
     //Enable the i2c module and wait
      SysCtlPeripheralEnable(SYSCTL_PERIPH_I2C1);
      SysCtlDelay(3);
@@ -22,45 +23,64 @@ void InitializeDistanceSensors(uint32_t SysClk){
      I2CMasterInitExpClk(I2C1_BASE, SysClk, false);
 
      //Shutdown all devices
-     GPIOPinWrite(GPIO_PORTA_BASE, GPIO_PIN_3, GPIO_PIN_3);
-     GPIOPinWrite(GPIO_PORTA_BASE, GPIO_PIN_4, GPIO_PIN_4);
-     GPIOPinWrite(GPIO_PORTA_BASE, GPIO_PIN_5, GPIO_PIN_5);
+     GPIOPinWrite(GPIO_PORTA_BASE, GPIO_PIN_3, 0);
+     GPIOPinWrite(GPIO_PORTA_BASE, GPIO_PIN_4, 0);
+     GPIOPinWrite(GPIO_PORTA_BASE, GPIO_PIN_5, 0);
 
      //Enable one device
-     //GPIOPinWrite(GPIO_PORTA_BASE, GPIO_PIN_3, 0);
+     GPIOPinWrite(GPIO_PORTA_BASE, GPIO_PIN_3, GPIO_PIN_3);
 
-     while(I2CMasterBusy(I2C1_BASE)){
-
-     }
-     uint32_t data = 0, step = 0;
-
-     //Write 0x0000 to the device
      I2CMasterSlaveAddrSet(I2C1_BASE, 0x29, false);
 
-     I2CMasterDataPut(I2C1_BASE, 0x000 >> 8);
+     I2CMasterDataPut(I2C1_BASE, 0x00);
      I2CMasterControl(I2C1_BASE, I2C_MASTER_CMD_BURST_SEND_START);
 
-     I2CMasterDataPut(I2C1_BASE, 0x000);
+     while(I2CMasterBusy(I2C1_BASE));
+
+     I2CMasterDataPut(I2C1_BASE, 0x00);
      I2CMasterControl(I2C1_BASE, I2C_MASTER_CMD_BURST_SEND_FINISH);
 
-     //Receive
+     while(I2CMasterBusy(I2C1_BASE));
+
      I2CMasterSlaveAddrSet(I2C1_BASE, 0x29, true);
      I2CMasterControl(I2C1_BASE, I2C_MASTER_CMD_SINGLE_RECEIVE);
 
-     while(!(I2CSlaveStatus(I2C1_BASE) & I2C_SLAVE_ACT_TREQ)){
+     while(I2CMasterBusy(I2C1_BASE));
 
-     }
+     data = I2CMasterDataGet(I2C1_BASE);
 
-     I2CSlaveDataPut(I2C1_BASE, 0xB4);
-     I2CMasterControl(I2C1_BASE, I2C_MASTER_CMD_SINGLE_RECEIVE);
-     while(!(I2CSlaveStatus(I2C1_BASE) & I2C_SLAVE_ACT_TREQ)){
+//     while(I2CMasterBusy(I2C1_BASE)){
+//
+//     }
+//     uint32_t data = 0, step = 0;
+//
+//     //Write 0x0000 to the device
+//     I2CMasterSlaveAddrSet(I2C1_BASE, 0x29, false);
+//
+//     I2CMasterDataPut(I2C1_BASE, 0x000 >> 8);
+//     I2CMasterControl(I2C1_BASE, I2C_MASTER_CMD_BURST_SEND_START);
+//
+//     I2CMasterDataPut(I2C1_BASE, 0x000);
+//     I2CMasterControl(I2C1_BASE, I2C_MASTER_CMD_BURST_SEND_FINISH);
+//
+//     //Receive
+//     I2CMasterSlaveAddrSet(I2C1_BASE, 0x29, true);
+//     I2CMasterControl(I2C1_BASE, I2C_MASTER_CMD_SINGLE_RECEIVE);
+//
+//     while(!(I2CSlaveStatus(I2C1_BASE) & I2C_SLAVE_ACT_TREQ)){
+//
+//     }
+//
+//     I2CSlaveDataPut(I2C1_BASE, 0xB4);
+//     I2CMasterControl(I2C1_BASE, I2C_MASTER_CMD_SINGLE_RECEIVE);
+//     //while(!(I2CSlaveStatus(I2C1_BASE) & I2C_SLAVE_ACT_TREQ)){
+//
+//     //}
+//     while(I2CMasterBusy(I2C1_BASE)){
+//
+//     }
 
-     }
-     //while(I2CMasterBusy(I2C1_BASE)){
-
-     //}
-
-     SysCtlDelay(SysClk / 3);
+     //SysCtlDelay(SysClk / 3);
 
      data = I2CMasterDataGet(I2C1_BASE);
      step = 1;
