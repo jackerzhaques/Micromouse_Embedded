@@ -16,6 +16,7 @@ ORDERED_OBJS += \
 "./tm4c123gh6pm_startup_ccs.obj" \
 "./ControlLoop/ControlGlobals.obj" \
 "./ControlLoop/ControlLoop.obj" \
+"./Drivers/I2C.obj" \
 "./Drivers/TB6612.obj" \
 "./Drivers/VL6180X.obj" \
 "./Interfaces/DistanceSensorInterface.obj" \
@@ -178,8 +179,8 @@ Micromouse.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "Robot.obj" "main.obj" "pinout.obj" "tm4c123gh6pm_startup_ccs.obj" "ControlLoop\ControlGlobals.obj" "ControlLoop\ControlLoop.obj" "Drivers\TB6612.obj" "Drivers\VL6180X.obj" "Interfaces\DistanceSensorInterface.obj" "Interfaces\EncoderInterface.obj" "Interfaces\MotorInterface.obj" "TaskScheduler\PriorityQueue.obj" "TaskScheduler\TaskScheduler.obj" "utils\uartstdio.obj" 
-	-$(RM) "Robot.d" "main.d" "pinout.d" "tm4c123gh6pm_startup_ccs.d" "ControlLoop\ControlGlobals.d" "ControlLoop\ControlLoop.d" "Drivers\TB6612.d" "Drivers\VL6180X.d" "Interfaces\DistanceSensorInterface.d" "Interfaces\EncoderInterface.d" "Interfaces\MotorInterface.d" "TaskScheduler\PriorityQueue.d" "TaskScheduler\TaskScheduler.d" "utils\uartstdio.d" 
+	-$(RM) "Robot.obj" "main.obj" "pinout.obj" "tm4c123gh6pm_startup_ccs.obj" "ControlLoop\ControlGlobals.obj" "ControlLoop\ControlLoop.obj" "Drivers\I2C.obj" "Drivers\TB6612.obj" "Drivers\VL6180X.obj" "Interfaces\DistanceSensorInterface.obj" "Interfaces\EncoderInterface.obj" "Interfaces\MotorInterface.obj" "TaskScheduler\PriorityQueue.obj" "TaskScheduler\TaskScheduler.obj" "utils\uartstdio.obj" 
+	-$(RM) "Robot.d" "main.d" "pinout.d" "tm4c123gh6pm_startup_ccs.d" "ControlLoop\ControlGlobals.d" "ControlLoop\ControlLoop.d" "Drivers\I2C.d" "Drivers\TB6612.d" "Drivers\VL6180X.d" "Interfaces\DistanceSensorInterface.d" "Interfaces\EncoderInterface.d" "Interfaces\MotorInterface.d" "TaskScheduler\PriorityQueue.d" "TaskScheduler\TaskScheduler.d" "utils\uartstdio.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 
